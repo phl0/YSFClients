@@ -19,6 +19,7 @@
 #include "APRSWriterThread.h"
 #include "Utils.h"
 #include "Log.h"
+#include "Version.h"
 
 #include <algorithm>
 #include <functional>
@@ -198,6 +199,8 @@ void CAPRSWriterThread::stop()
 
 bool CAPRSWriterThread::connect()
 {
+	int version = VERSION;
+
 	bool ret = m_socket.open();
 	if (!ret)
 		return false;
@@ -216,10 +219,10 @@ bool CAPRSWriterThread::connect()
 
 	std::string filter(m_filter);
 	if (filter.length() > 0)
-		filter.insert(0U, " filter ");
+		filter.insert(0U, "filter ");
 
 	char connectString[200U];
-	::sprintf(connectString, "user %s pass %s vers %s%s\n", m_username.c_str(), m_password.c_str(), (m_clientName.length() ? m_clientName : "YSFGateway").c_str(), filter.c_str());
+	::sprintf(connectString, "user %s pass %s vers %s-%d %s\n", m_username.c_str(), m_password.c_str(), (m_clientName.length() ? m_clientName : "YSFGateway").c_str(), version, filter.c_str());
 
 	ret = m_socket.writeLine(std::string(connectString));
 	if (!ret) {
